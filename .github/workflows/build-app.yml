@@ -1,0 +1,43 @@
+name: 构建 app 镜像
+
+on:
+  push:
+    paths:
+      - .github/workflows/build-app.yml
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: '日志级别'
+        required: true
+        default: 'warning'
+      tags:
+        description: '手动发布到 Docker Hub'
+        required: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      VERSION: v5.6.2 # 在这里设定你的版本号
+      APP_NAME: scraper-news  # 定义应用名称变量
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}  # 定义 Docker Hub 用户名变量
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}  # 定义 Docker Hub 令牌变量
+      DOCKERFILE_NAME: Dockerfile.app  # 定义 Dockerfile 文件名变量
+
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+
+    - name: 登录到 Docker Hub
+      run: echo "${{ env.DOCKER_TOKEN }}" | docker login -u "${{ env.DOCKER_USERNAME }}" --password-stdin
+
+    - name: 构建 app 映像
+      run: |
+        docker build -f ${{ env.DOCKERFILE_NAME }} -t "${{ env.DOCKER_USERNAME }}/${{ env.APP_NAME }}:latest" -t "${{ env.DOCKER_USERNAME }}/${{ env.APP_NAME }}:${{ env.VERSION }}" .
+
+    - name: 发布映像到 Docker Hub
+      run: |
+        docker push ${{ env.DOCKER_USERNAME }}/${{ env.APP_NAME }}:latest
+        docker push ${{ env.DOCKER_USERNAME }}/${{ env.APP_NAME }}:${{ env.VERSION }}

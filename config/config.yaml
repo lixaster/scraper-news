@@ -1,0 +1,34 @@
+HEADLESS: true
+INTERVAL: 600
+SCHEDULE_TIME:
+  - "08:00"
+  - "12:00"
+  - "18:00"
+
+# 调试模式，在容器启动时运行一次爬取
+debug_mode: true
+# 推送开关
+notify_switch: false
+
+# NodeRed Webhook
+webhook_url: "http://192.168.1.2:1880/scraper-news?token=scraperxxx"
+
+# 设置用户uid和gid
+uid: 1027
+gid: 100
+
+save_folder: "docx"  # 默认湖北新闻放于docx的子文件夹hubeigov，人民日报放于子文件夹renmin
+news_sites:
+  # 人民网
+  - name: renmin
+    name_cn: 人民网
+    url: "http://opinion.people.com.cn/GB/8213/49160/index.html"
+  
+  # 湖北省政府新闻
+  - name: hubeigov
+    name_cn: 湖北省政府
+    url:
+      - https://www.hubei.gov.cn/hbfb/zwpl/
+      - https://www.hubei.gov.cn/zwgk/hbyw/hbywqb/
+      - https://www.hubei.gov.cn/hbfb/xwfbh/
+      - https://www.hubei.gov.cn/xxgk/hbzcjd/

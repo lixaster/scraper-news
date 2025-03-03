@@ -1,0 +1,11 @@
+services:
+  hubei_news:
+    image: lixaster/hb_news:latest
+    container_name: hubei_news
+    network_mode: bridge
+    volumes:
+      - /path/to/config:/app/config
+      - /path/to/docx:/app/docx
+      - /path/to/scripts:/app
+    cpu_shares: 10
+    restart: unless-stopped
