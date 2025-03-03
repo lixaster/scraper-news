@@ -4,7 +4,7 @@ from docx import Document
 import shutil
 import sys
 from utils_func import load_config, mkdirs_with_owner, change_file_owner, setup_logging
-from move_to_stars_folder_api import process_stars_move_api
+from move_to_stars_via_api import process_stars_move
 
 # 配置日志
 logging = setup_logging()
@@ -134,7 +134,7 @@ if __name__ == "__main__":
 
     # 移动加星文件到指定文件夹，防止掉加星
     logging.info("开始移动加星文件到指定文件夹")
-    process_stars_move_api()
+    process_stars_move()
 
     current_date = datetime.now().strftime("%Y-%m-%d")
     if mode in ["combine", "stars"]:

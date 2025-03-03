@@ -68,7 +68,7 @@ def move_starred_files(synd, data_items, remote_folder_path):
                 logging.info(f"移动文件失败: {e}，文件: {item['display_path']}")
 
 
-def process_stars_move_api():
+def process_stars_move():
     # default http port is 5000, https is 5001.
     with SynologyDrive(
         NAS_USER, NAS_PASS, NAS_IP, https=False, dsm_version="7"
@@ -82,4 +82,4 @@ def process_stars_move_api():
 
 
 if __name__ == "__main__":
-    process_stars_move_api()
+    process_stars_move()
