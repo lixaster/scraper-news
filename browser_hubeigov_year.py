@@ -18,22 +18,22 @@ class HubeigovScraperYear(HubeigovScraper):
         selector = "div.hbgov-index-bar"
         for url in self.url:
             i = 0
-            flag = True
-            while flag and i < 50:
+            while i < 50:
                 if i != 0:
                     url = urljoin(url, f"index_{i}.shtml")
                 i += 1
                 soup = self.fetch_page_soup(page, url, selector)
+                if not soup:
+                    break
                 sub_paper_list = self.parse_paper_list(soup, url)
                 if sub_paper_list:  # 如果不是空列表
                     for paper in sub_paper_list:
                         if self.is_year_match(paper["pubtime"]):
                             paper_list.append(paper)
                         else:
-                            flag = False
-                            break
+                            continue
                 else:
-                    flag = False
+                    continue
 
         return paper_list
 

@@ -2,3 +2,4 @@
 /.venv
 /docx
 /config/secret.yaml
+/.vscode
