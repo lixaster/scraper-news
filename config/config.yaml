@@ -32,3 +32,10 @@ news_sites:
       - https://www.hubei.gov.cn/zwgk/hbyw/hbywqb/
       - https://www.hubei.gov.cn/hbfb/xwfbh/
       - https://www.hubei.gov.cn/xxgk/hbzcjd/
+  
+  # 人民网日本版
+  - name: renmin_jp
+    name_cn: 人民网日本版
+    url: 
+    - http://j.people.com.cn/95961/index.html
+    - http://j.people.com.cn/95961/index2.html
