@@ -44,12 +44,16 @@ class HubeigovScraper(BaseScraper):
 
     def get_paper_list(self, page):
         paper_list = []
-        for url in self.url:
-            selector = "div.hbgov-index-bar"
-            soup = self.fetch_page_soup(page, url, selector)
-            sub_paper_list = self.parse_paper_list(soup, url)
-            if sub_paper_list:  # 如果不是空列表
-                paper_list.extend(sub_paper_list)
+        try:
+            for url in self.url:
+                selector = "div.hbgov-index-bar"
+                soup = self.fetch_page_soup(page, url, selector)
+                sub_paper_list = self.parse_paper_list(soup, url)
+                if sub_paper_list:  # 如果不是空列表
+                    paper_list.extend(sub_paper_list)
+        except Exception as e:
+            logging.error(f"get_paper_list()运行过程出错：{str(e)}")
+
         return paper_list
 
     def fetch_page_soup(self, page, url, selector=""):

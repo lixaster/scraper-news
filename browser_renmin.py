@@ -24,10 +24,14 @@ class RenminScraper(BaseScraper):
         return self.retrieve_paper()
 
     def get_paper_list(self):
-        soup = self.fetch_page_soup(self.url)
-        category_list = self.parse_categories(soup)
-        paper_list = self.parse_paper_list(soup, category_list)
-        return paper_list
+        try:
+            soup = self.fetch_page_soup(self.url)
+            category_list = self.parse_categories(soup)
+            paper_list = self.parse_paper_list(soup, category_list)
+            return paper_list
+        except Exception as e:
+            logging.error(f"get_paper_list()运行过程出错：{str(e)}")
+            return []
 
     def parse_categories(self, soup):
         div_header = soup.find("div", class_="header").find("div", class_="item")
