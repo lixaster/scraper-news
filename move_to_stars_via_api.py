@@ -21,7 +21,7 @@ import os
 from utils_func import load_config, path_join, setup_logging
 
 # 配置日志
-logging = setup_logging()
+logger = setup_logging()
 
 # 读取 yaml 文件，获取配置信息
 config_nas = load_config("config/secret.yaml")
@@ -39,9 +39,9 @@ def ensure_starred_folder_exists(
     if not any(item["display_path"] == starred_folder_path for item in data_items):
         try:
             synd.create_folder(starred_folder_name, remote_folder_path)
-            logging.info(f"文件夹创建成功: {starred_folder_path}")
+            logger.info(f"文件夹创建成功: {starred_folder_path}")
         except Exception as e:
-            logging.info(f"创建文件夹失败: {e}")
+            logger.info(f"创建文件夹失败: {e}")
             return False
     return True
 
@@ -61,11 +61,11 @@ def move_starred_files(synd, data_items, remote_folder_path):
         if item.get("starred") and item.get("type") == "file":
             try:
                 synd.move_path(item["display_path"], starred_folder_path)
-                logging.info(
+                logger.info(
                     f"移动文件成功: {os.path.basename(item['display_path'])} -> 【{starred_folder_path.replace(REMOTE_ROOT_FOLDER, '')}】"
                 )
             except Exception as e:
-                logging.info(f"移动文件失败: {e}，文件: {item['display_path']}")
+                logger.info(f"移动文件失败: {e}，文件: {item['display_path']}")
 
 
 def process_stars_move():

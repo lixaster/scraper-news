@@ -3,10 +3,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 import re
 from base_scraper import BaseScraper
-from utils_func import setup_logging
 
-# 配置日志
-logging = setup_logging()
 
 class RenminScraper(BaseScraper):
     def __init__(self, config):
@@ -30,7 +27,7 @@ class RenminScraper(BaseScraper):
             paper_list = self.parse_paper_list(soup, category_list)
             return paper_list
         except Exception as e:
-            logging.error(f"get_paper_list()运行过程出错：{str(e)}")
+            self.logger.error(f"get_paper_list()运行过程出错：{str(e)}")
             return []
 
     def parse_categories(self, soup):
@@ -84,7 +81,7 @@ class RenminScraper(BaseScraper):
             return p_elements
 
         except Exception as e:
-            logging.error(f"get_paper_info()运行过程出错：{str(e)}")
+            self.logger.error(f"get_paper_info()运行过程出错：{str(e)}")
             return []
 
     def fetch_page_soup(self, url):

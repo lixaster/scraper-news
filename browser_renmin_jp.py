@@ -45,7 +45,7 @@ class RenminJpScraper(BaseScraper):
         try:
             return self.retrieve_paper()
         except Exception as e:
-            logging.error(f"请求数据时发生错误: {str(e)}")
+            self.logger.error(f"请求数据时发生错误: {str(e)}")
             return False
 
     def get_paper_list(self) -> List[Dict[str, str]]:
@@ -59,7 +59,7 @@ class RenminJpScraper(BaseScraper):
                 if sub_paper_list:
                     paper_list.extend(sub_paper_list)
             except Exception as e:
-                logging.error(f"处理URL {url} 时发生错误: {str(e)}")
+                self.logger.error(f"处理URL {url} 时发生错误: {str(e)}")
                 continue
         return paper_list
 
@@ -73,7 +73,7 @@ class RenminJpScraper(BaseScraper):
             )
             return category
         except AttributeError:
-            logging.error("无法找到文章分类")
+            self.logger.error("无法找到文章分类")
             return "未知分类"
 
     def parse_paper_list(self, soup: BeautifulSoup, category: str) -> List[Dict[str, str]]:
@@ -97,10 +97,10 @@ class RenminJpScraper(BaseScraper):
                         "title": title,
                     })
                 except Exception as e:
-                    logging.error(f"解析文章条目时发生错误: {str(e)}")
+                    self.logger.error(f"解析文章条目时发生错误: {str(e)}")
                     continue
         except Exception as e:
-            logging.error(f"解析文章列表时发生错误: {str(e)}")
+            self.logger.error(f"解析文章列表时发生错误: {str(e)}")
         return paper_list
 
     def get_paper_info(self, href: str) -> List[Any]:
@@ -122,7 +122,7 @@ class RenminJpScraper(BaseScraper):
             return p_elements
 
         except Exception as e:
-            logging.error(f"获取文章信息时发生错误: {str(e)}")
+            self.logger.error(f"获取文章信息时发生错误: {str(e)}")
             return []
 
     def fetch_page_soup(self, url: str) -> BeautifulSoup:
@@ -144,7 +144,7 @@ class RenminJpScraper(BaseScraper):
                     
             return soup
         except Exception as e:
-            logging.error(f"获取页面 {url} 时发生错误: {str(e)}")
+            self.logger.error(f"获取页面 {url} 时发生错误: {str(e)}")
             raise
 
     def extract_and_write_paragraphs(self, doc: Any, p_elements: List[Any]) -> None:
@@ -156,7 +156,7 @@ class RenminJpScraper(BaseScraper):
                     run = self.format_paragraph_font(paragraph)
                     run.text = content.replace("　　", "").strip()
             except Exception as e:
-                logging.error(f"处理段落时发生错误: {str(e)}")
+                self.logger.error(f"处理段落时发生错误: {str(e)}")
                 continue
 
 
@@ -166,7 +166,7 @@ def browser_func(config: Dict[str, Any]) -> bool:
         scraper = RenminJpScraper(config)
         return scraper.request_data()
     except Exception as e:
-        logging.error(f"程序运行出错: {str(e)}")
+        self.logger.error(f"程序运行出错: {str(e)}")
         return False
 
 

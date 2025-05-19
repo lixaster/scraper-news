@@ -70,7 +70,7 @@ class RenminScraperYear(RenminScraper):
             sub_category_href = item.find("h3").find("a")["href"].strip()
             return sub_category_href
         except Exception as e:
-            logging.error(f"get_sub_category_href()运行过程出错：{str(e)}")
+            self.logger.error(f"get_sub_category_href()运行过程出错：{str(e)}")
             return None
 
 

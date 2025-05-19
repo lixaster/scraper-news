@@ -7,21 +7,20 @@ from docx.oxml.ns import qn
 import requests
 from utils_func import setup_logging
 
-# 配置日志
-logging = setup_logging()
-
 
 class BaseScraper:
     # 包括静态属性和方法
 
     # 实例化时需要传入配置文件路径、url键名、保存文件夹键名
     def __init__(self, config):
+        # 配置日志
+        self.logger = setup_logging()
         for news_site in config.get("news_sites"):
             if news_site.get("name") == self.source_name:
                 self.source_name_cn = news_site.get("name_cn")
                 self.url = news_site.get("url")
                 break
-        logging.info(f"{self.source_name_cn} 爬虫开始运行...")
+        self.logger.info(f"{self.source_name_cn} 爬虫开始运行...")
 
         self.uid = int(config.get("uid", 1027))
         self.gid = int(config.get("gid", 100))
@@ -39,7 +38,7 @@ class BaseScraper:
         try:
             paper_list = self.get_paper_list(page) if page else self.get_paper_list()
             if not paper_list:
-                logging.error("错误：没有找到任何文章，请等待下一次尝试。")
+                self.logger.error("错误：没有找到任何文章，请等待下一次尝试。")
                 return False
 
             new_paper_list = []
@@ -52,7 +51,7 @@ class BaseScraper:
                 )
 
                 if category == "政策解读库" and title.startswith("图解"):
-                    logging.info(f"【跳过图解】[{category}] {datetime} {title} ...")
+                    self.logger.info(f"【跳过图解】[{category}] {datetime} {title} ...")
                     continue
 
                 name_pure = f"{category}-{self.format_date(datetime)}-{title}"
@@ -62,7 +61,7 @@ class BaseScraper:
                 # 下载正文
                 file_name = f"{name_pure}.docx"
                 if not self.is_downloaded(file_name):
-                    logging.info(f"【正在处理】[{category}] {datetime} {title} ...")
+                    self.logger.info(f"【正在处理】[{category}] {datetime} {title} ...")
                     p_elements = (
                         self.get_paper_info(href, page)
                         if page
@@ -81,7 +80,7 @@ class BaseScraper:
                 if "政策解读库" in file_name_attachement and not self.is_downloaded(
                     file_name_attachement
                 ):
-                    logging.info(
+                    self.logger.info(
                         f"【正在处理】[{category}] {datetime} {title} 相关文件 ..."
                     )
                     href_attachement = paper.get("href_attachement")
@@ -99,7 +98,7 @@ class BaseScraper:
             return True
 
         except Exception as e:
-            logging.error(f"retrieve_paper()运行过程出错：{str(e)}")
+            self.logger.error(f"retrieve_paper()运行过程出错：{str(e)}")
             return False
 
     def is_downloaded(self, file_name):
@@ -163,7 +162,7 @@ class BaseScraper:
         if (count := len(new_paper_list)) == 0:
             return
 
-        logging.info(
+        self.logger.info(
             f"{self.source_name}新增{count}篇文章，跳过{total-count}篇已存在的文章。"
         )
         ha_notify = {
@@ -176,7 +175,7 @@ class BaseScraper:
         if self.webhook_url:
             # requests不需要等待返回，用子进程直接发送
 
-            logging.info(f"发送消息到webhook：{self.webhook_url}")
+            self.logger.info(f"发送消息到webhook：{self.webhook_url}")
             requests.post(self.webhook_url, json=payload)
 
     def change_file_owner(self, file_path):
@@ -187,7 +186,7 @@ class BaseScraper:
             if platform.system() == "Linux":
                 os.chown(file_path, self.uid, self.gid)
         except Exception as e:
-            logging.info(f"更改文件所有者失败: {e}")
+            self.logger.info(f"更改文件所有者失败: {e}")
 
     # ------------------------------------------------------- #
     # 子类需要实现的抽象方法，目前主要是湖北政府新闻网需要实现

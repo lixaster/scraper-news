@@ -2,10 +2,7 @@ from playwright.sync_api import Playwright, sync_playwright
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from base_scraper import BaseScraper
-from utils_func import setup_logging
 
-# 配置日志
-logging = setup_logging()
 
 class HubeigovScraper(BaseScraper):
     def __init__(self, config):
@@ -20,27 +17,27 @@ class HubeigovScraper(BaseScraper):
                 self.run(playwright)
                 return True
         except Exception as e:
-            logging.error(f"request_data()运行过程出错：{str(e)}")
+            self.logger.error(f"request_data()运行过程出错：{str(e)}")
             return False
 
     def run(self, playwright: Playwright):
         browser = None
         context = None
         try:
-            logging.info("开始启动playwright...")
+            self.logger.info("开始启动playwright...")
             browser = playwright.firefox.launch(headless=self.headless_mode)
             context = browser.new_context()
             page = context.new_page()
             page.set_default_timeout(120000)  # 设置超时时间为2分钟
             self.retrieve_paper(page)
         except Exception as e:
-            logging.error(f"run()运行过程出错：提前退出playwright。原因：{str(e)}")
+            self.logger.error(f"run()运行过程出错：提前退出playwright。原因：{str(e)}")
         finally:
             if context:
                 context.close()
             if browser:
                 browser.close()
-            logging.info("playwright已关闭。")
+            self.logger.info("playwright已关闭。")
 
     def get_paper_list(self, page):
         paper_list = []
@@ -52,7 +49,7 @@ class HubeigovScraper(BaseScraper):
                 if sub_paper_list:  # 如果不是空列表
                     paper_list.extend(sub_paper_list)
         except Exception as e:
-            logging.error(f"get_paper_list()运行过程出错：{str(e)}")
+            self.logger.error(f"get_paper_list()运行过程出错：{str(e)}")
 
         return paper_list
 
@@ -65,7 +62,7 @@ class HubeigovScraper(BaseScraper):
             soup = BeautifulSoup(content, "html.parser")
             return soup
         except Exception as e:
-            logging.error(f"fetch_page_soup()运行过程出错：{str(e)}")
+            self.logger.error(f"fetch_page_soup()运行过程出错：{str(e)}")
             return None
 
     def parse_paper_list(self, soup, url):
@@ -138,7 +135,7 @@ class HubeigovScraper(BaseScraper):
             return p_elements
 
         except Exception as e:
-            logging.error(f"get_paper_info()运行过程出错：{str(e)}")
+            self.logger.error(f"get_paper_info()运行过程出错：{str(e)}")
             return []
 
     def retrieve_attachement(
@@ -166,7 +163,7 @@ class HubeigovScraper(BaseScraper):
                     p_elements_attachement,
                 )
         except Exception as e:
-            logging.error(f"retrieve_attachement()运行过程出错：{str(e)}")
+            self.logger.error(f"retrieve_attachement()运行过程出错：{str(e)}")
 
 
 def browser_func(config):
