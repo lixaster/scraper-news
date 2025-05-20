@@ -10,10 +10,10 @@ logging = setup_logging()
 
 
 class RenminJpScraper(BaseScraper):
-    def __init__(self, config):
-        # 父类初始化，获得config、url、save_folder
+    def __init__(self):
+        # 父类初始化，获得url、save_folder
         self.source_name = "renmin_jp"
-        super().__init__(config)
+        super().__init__()
         self.base_url = self.get_base_url(self.url)
 
     def get_base_url(self, url):
@@ -33,7 +33,7 @@ class RenminJpScraper(BaseScraper):
             sub_paper_list = self.parse_paper_list(soup, category)
             if sub_paper_list:  # 如果不是空列表
                 paper_list.extend(sub_paper_list)
-            
+
         return paper_list
 
     def parse_categories(self, soup):
@@ -114,14 +114,10 @@ class RenminJpScraper(BaseScraper):
                 run.text = content.replace("　　", "").strip()
 
 
-def browser_func(config):
-    scraper = RenminJpScraper(config)
+def browser_func():
+    scraper = RenminJpScraper()
     return scraper.request_data()
 
 
 if __name__ == "__main__":
-    from utils_func import load_config
-
-    # 读取 yaml 文件，获取配置信息
-    config = load_config()
-    browser_func(config)
+    browser_func()

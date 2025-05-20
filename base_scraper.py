@@ -11,12 +11,13 @@ from utils_func import setup_logging, load_config
 class BaseScraper:
     # 包括静态属性和方法
 
-    # 实例化时需要传入配置文件路径、url键名、保存文件夹键名
     def __init__(self):
         # 配置日志
         self.logger = setup_logging()
+        # 读取配置文件
         config = load_config()
         self.config = config
+        # 获取配置文件中的新闻站点
         for news_site in config.get("news_sites"):
             if news_site.get("name") == self.source_name:
                 self.source_name_cn = news_site.get("name_cn")
