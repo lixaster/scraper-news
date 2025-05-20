@@ -6,10 +6,10 @@ from base_scraper import BaseScraper
 
 
 class RenminScraper(BaseScraper):
-    def __init__(self, config):
-        # 父类初始化，获得config、url、save_folder
+    def __init__(self):
+        # 父类初始化，获得url、save_folder
         self.source_name = "renmin"
-        super().__init__(config)
+        super().__init__()
         self.base_url = self.get_base_url(self.url)
 
     def get_base_url(self, url):
@@ -112,14 +112,10 @@ class RenminScraper(BaseScraper):
                 run.text = content.replace("　　", "").strip()
 
 
-def browser_func(config):
-    scraper = RenminScraper(config)
+def browser_func():
+    scraper = RenminScraper()
     return scraper.request_data()
 
 
 if __name__ == "__main__":
-    from utils_func import load_config
-
-    # 读取 yaml 文件，获取配置信息
-    config = load_config()
-    browser_func(config)
+    browser_func()

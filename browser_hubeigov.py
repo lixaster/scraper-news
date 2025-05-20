@@ -5,11 +5,11 @@ from base_scraper import BaseScraper
 
 
 class HubeigovScraper(BaseScraper):
-    def __init__(self, config):
-        # 父类初始化，获得config、url或列表、save_folder
+    def __init__(self):
+        # 父类初始化，获得url或列表、save_folder
         self.source_name = "hubeigov"
-        super().__init__(config)
-        self.headless_mode = config.get("HEADLESS", False)
+        super().__init__()
+        self.headless_mode = self.config.get("HEADLESS", False)
 
     def request_data(self):
         try:
@@ -166,14 +166,11 @@ class HubeigovScraper(BaseScraper):
             self.logger.error(f"retrieve_attachement()运行过程出错：{str(e)}")
 
 
-def browser_func(config):
-    scraper = HubeigovScraper(config)
+def browser_func():
+    scraper = HubeigovScraper()
     return scraper.request_data()
 
 
 if __name__ == "__main__":
-    from utils_func import load_config
 
-    # 读取 yaml 文件，获取配置信息
-    config = load_config()
-    browser_func(config)
+    browser_func()

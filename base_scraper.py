@@ -5,16 +5,18 @@ from docx.shared import Pt, Mm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.ns import qn
 import requests
-from utils_func import setup_logging
+from utils_func import setup_logging, load_config
 
 
 class BaseScraper:
     # 包括静态属性和方法
 
     # 实例化时需要传入配置文件路径、url键名、保存文件夹键名
-    def __init__(self, config):
+    def __init__(self):
         # 配置日志
         self.logger = setup_logging()
+        config = load_config()
+        self.config = config
         for news_site in config.get("news_sites"):
             if news_site.get("name") == self.source_name:
                 self.source_name_cn = news_site.get("name_cn")
@@ -27,7 +29,9 @@ class BaseScraper:
         self.notify_switch = config.get("notify_switch", False)
         self.webhook_url = config.get("webhook_url", None)
         self.save_folder = os.path.join(
-            os.getcwd(), config.get("save_folder", "docx"), self.source_name
+            os.path.dirname(os.path.abspath(__file__)),
+            config.get("save_folder", "docx"),
+            self.source_name,
         )
         os.makedirs(self.save_folder, exist_ok=True)
 
@@ -175,35 +179,35 @@ class BaseScraper:
         if self.webhook_url:
             # requests不需要等待返回，用子进程直接发送
 
-            self.logger.info(f"发送消息到webhook：{self.webhook_url}")
+            self.logger.info(f"发送消息到webhook: {self.webhook_url}")
             requests.post(self.webhook_url, json=payload)
 
     def change_file_owner(self, file_path):
+        """
+        更改文件所有者, 仅在Linux系统下有效
+        """
         try:
-            # 更改文件所有者
-            import platform
-
-            if platform.system() == "Linux":
+            if os.name == "posix":
                 os.chown(file_path, self.uid, self.gid)
         except Exception as e:
             self.logger.info(f"更改文件所有者失败: {e}")
 
     # ------------------------------------------------------- #
-    # 子类需要实现的抽象方法，目前主要是湖北政府新闻网需要实现
+    # 子类需要实现的抽象方法，为了防止子类未实现，这里会raise NotImplementedError
     def extract_and_write_paragraphs(self, doc, p_elements):
         # 必须在子类中实现
-        pass
+        raise NotImplementedError("子类必须实现extract_and_write_paragraphs方法")
 
     def get_paper_info(href, page=None):
         # 必须在子类中实现
-        pass
+        raise NotImplementedError("子类必须实现get_paper_info方法")
 
     def get_paper_list(self, page=None):
         # 必须在子类中实现
-        pass
+        raise NotImplementedError("子类必须实现get_paper_list方法")
 
     def retrieve_attachement(
         self, page, href_attachement, file_name_attachement, category, datetime
     ):
         # 必须在子类中实现
-        pass
+        raise NotImplementedError("子类必须实现retrieve_attachement方法")

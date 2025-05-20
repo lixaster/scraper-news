@@ -1,16 +1,16 @@
 from urllib.parse import urljoin
 from browser_renmin import RenminScraper
 import re
-from utils_func import load_config,setup_logging
+from utils_func import setup_logging
 
 # 配置日志
 logging = setup_logging()
 
 
 class RenminScraperYear(RenminScraper):
-    def __init__(self, config, year):
+    def __init__(self, year):
         # 父类初始化
-        super().__init__(config)
+        super().__init__()
         self.year = str(year)
 
     def parse_paper_list(self, soup, category_list):
@@ -74,15 +74,13 @@ class RenminScraperYear(RenminScraper):
             return None
 
 
-def browser_func(config_path, year):
-    scraper = RenminScraperYear(config_path, year)
+def browser_func(year):
+    scraper = RenminScraperYear(year)
     return scraper.request_data()
 
 
 if __name__ == "__main__":
-    from utils_func import load_config, load_year_from_args
+    from utils_func import load_year_from_args
 
-    # 读取 yaml 文件，获取配置信息
-    config = load_config()
     year = load_year_from_args()
-    browser_func(config, year)
+    browser_func(year)

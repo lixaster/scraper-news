@@ -13,10 +13,10 @@ logging = setup_logging()
 
 
 class RenminJpScraper(BaseScraper):
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self):
         # 父类初始化，获得config、url、save_folder
         self.source_name = "renmin_jp"
-        super().__init__(config)
+        super().__init__()
         self.base_url = self.get_base_url(self.url)
         self.session = self._setup_session()
 
@@ -160,19 +160,12 @@ class RenminJpScraper(BaseScraper):
                 continue
 
 
-def browser_func(config: Dict[str, Any]) -> bool:
+def browser_func() -> None:
     """主函数入口"""
-    try:
-        scraper = RenminJpScraper(config)
-        return scraper.request_data()
-    except Exception as e:
-        self.logger.error(f"程序运行出错: {str(e)}")
-        return False
+    scraper = RenminJpScraper()
+    return scraper.request_data()
+
 
 
 if __name__ == "__main__":
-    from utils_func import load_config
-
-    # 读取 yaml 文件，获取配置信息
-    config = load_config()
-    browser_func(config)
+    browser_func()

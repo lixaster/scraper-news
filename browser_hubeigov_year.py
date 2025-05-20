@@ -8,9 +8,9 @@ logging = setup_logging()
 
 
 class HubeigovScraperYear(HubeigovScraper):
-    def __init__(self, config, year):
+    def __init__(self, year):
         # 父类初始化
-        super().__init__(config)
+        super().__init__()
         self.year = str(year)
 
     def get_paper_list(self, page):
@@ -45,15 +45,13 @@ class HubeigovScraperYear(HubeigovScraper):
         return False
 
 
-def browser_func(config_path, year):
-    scraper = HubeigovScraperYear(config_path, year)
+def browser_func(year):
+    scraper = HubeigovScraperYear(year)
     return scraper.request_data()
 
 
 if __name__ == "__main__":
-    from utils_func import load_config, load_year_from_args
+    from utils_func import load_year_from_args
 
-    # 读取 yaml 文件，获取配置信息
-    config = load_config()
     year = load_year_from_args()
-    browser_func(config, year)
+    browser_func(year)
