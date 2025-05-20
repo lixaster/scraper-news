@@ -71,7 +71,7 @@ def move_starred_files(synd, data_items, remote_folder_path):
 
 def process_stars_move():
     # default http port is 5000, https is 5001.
-    def nas_connected():
+    def nas_connected() -> bool:
         # 使用requests判断NAS_IP地址是否可以连通
         try:
             response = requests.get(f"http://{NAS_IP}:5000")
