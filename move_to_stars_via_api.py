@@ -19,6 +19,7 @@
 from synology_drive_api.drive import SynologyDrive
 import os
 from utils_func import load_config, path_join, setup_logging
+import requests
 
 # 配置日志
 logger = setup_logging()
@@ -71,13 +72,16 @@ def move_starred_files(synd, data_items, remote_folder_path):
 def process_stars_move():
     # default http port is 5000, https is 5001.
     def nas_connected():
-        # ping需要sudo，所以采用curl
-        response = os.system(f"curl -I {NAS_IP}")
-        return response == 0
+        # 使用requests判断NAS_IP地址是否可以连通
+        try:
+            response = requests.get(f"http://{NAS_IP}:5000")
+            return response.status_code == 200
+        except Exception as e:
+            logger.info(f"{NAS_IP} 地址无法连通: {e}")
+            return False
 
-    # 判断NAS_IP地址是否可以连通
+    # 如果NAS_IP地址无法连通，则跳过移动加星文件
     if not nas_connected():
-        logger.info(f"{NAS_IP} 地址无法连通，跳过移动加星文件")
         return
     
     with SynologyDrive(
