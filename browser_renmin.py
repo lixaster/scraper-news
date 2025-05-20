@@ -13,7 +13,7 @@ class RenminScraper(BaseScraper):
         self.base_url = self.get_base_url(self.url)
 
     def get_base_url(self, url):
-        if type(url) == list:
+        if isinstance(url, list):
             url = url[0]
         parsed_url = urlparse(url)
         return f"{parsed_url.scheme}://{parsed_url.netloc}/"

@@ -70,6 +70,16 @@ def move_starred_files(synd, data_items, remote_folder_path):
 
 def process_stars_move():
     # default http port is 5000, https is 5001.
+    def nas_connected():
+        # ping需要sudo，所以采用curl
+        response = os.system(f"curl -I {NAS_IP}")
+        return response == 0
+
+    # 判断NAS_IP地址是否可以连通
+    if not nas_connected():
+        logger.info(f"{NAS_IP} 地址无法连通，跳过移动加星文件")
+        return
+    
     with SynologyDrive(
         NAS_USER, NAS_PASS, NAS_IP, https=False, dsm_version="7"
     ) as synd:
