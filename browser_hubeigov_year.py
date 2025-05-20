@@ -47,7 +47,7 @@ class HubeigovScraperYear(HubeigovScraper):
 
 def browser_func(year):
     scraper = HubeigovScraperYear(year)
-    return scraper.request_data()
+    return scraper.run()
 
 
 if __name__ == "__main__":

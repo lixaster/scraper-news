@@ -76,7 +76,7 @@ class RenminScraperYear(RenminScraper):
 
 def browser_func(year):
     scraper = RenminScraperYear(year)
-    return scraper.request_data()
+    return scraper.run()
 
 
 if __name__ == "__main__":

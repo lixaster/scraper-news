@@ -10,7 +10,6 @@ from utils_func import setup_logging, load_config
 
 class BaseScraper:
     # 包括静态属性和方法
-
     def __init__(self):
         # 配置日志
         self.logger = setup_logging()

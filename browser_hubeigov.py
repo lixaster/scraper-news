@@ -11,16 +11,16 @@ class HubeigovScraper(BaseScraper):
         super().__init__()
         self.headless_mode = self.config.get("HEADLESS", False)
 
-    def request_data(self):
+    def run(self):
         try:
             with sync_playwright() as playwright:
-                self.run(playwright)
+                self.request_data(playwright)
                 return True
         except Exception as e:
             self.logger.error(f"request_data()运行过程出错：{str(e)}")
             return False
 
-    def run(self, playwright: Playwright):
+    def request_data(self, playwright: Playwright):
         browser = None
         context = None
         try:
@@ -168,7 +168,7 @@ class HubeigovScraper(BaseScraper):
 
 def browser_func():
     scraper = HubeigovScraper()
-    return scraper.request_data()
+    return scraper.run()
 
 
 if __name__ == "__main__":

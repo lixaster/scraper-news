@@ -6,25 +6,33 @@ from base_scraper import BaseScraper
 
 
 class RenminScraper(BaseScraper):
-    def __init__(self):
+    def __init__(self, sub=""):
         # 父类初始化，获得url、save_folder
-        self.source_name = "renmin"
+        self.source_name = "renmin" + sub
         super().__init__()
         self.base_url = self.get_base_url(self.url)
 
     def get_base_url(self, url):
+        if type(url) == list:
+            url = url[0]
         parsed_url = urlparse(url)
         return f"{parsed_url.scheme}://{parsed_url.netloc}/"
 
-    def request_data(self):
-        # 父类方法，必须在子类中实现get_paper_list和get_paper_info方法
+    def run(self):
+        # 必须在子类中实现get_paper_list和get_paper_info方法
         return self.retrieve_paper()
 
     def get_paper_list(self):
+        if type(self.url) == str:
+            self.url = [self.url]
+        paper_list = []
         try:
-            soup = self.fetch_page_soup(self.url)
-            category_list = self.parse_categories(soup)
-            paper_list = self.parse_paper_list(soup, category_list)
+            for url in self.url:
+                soup = self.fetch_page_soup(url)
+                category = self.parse_categories(soup)
+                sub_paper_list = self.parse_paper_list(soup, category)
+                if sub_paper_list:  # 如果不是空列表
+                    paper_list.extend(sub_paper_list)
             return paper_list
         except Exception as e:
             self.logger.error(f"get_paper_list()运行过程出错：{str(e)}")
@@ -87,21 +95,21 @@ class RenminScraper(BaseScraper):
     def fetch_page_soup(self, url):
         response = requests.get(url)
         # 解析HTML
-        soup = BeautifulSoup(response.text, 'html.parser')
+        soup = BeautifulSoup(response.text, "html.parser")
 
         # 查找<meta>标签
-        meta_tag = soup.find('meta', attrs={'http-equiv': 'content-type'})
+        meta_tag = soup.find("meta", attrs={"http-equiv": "content-type"})
 
         # 如果找到<meta>标签，提取编码信息
-        if meta_tag and 'content' in meta_tag.attrs:
-            content = meta_tag['content']
+        if meta_tag and "content" in meta_tag.attrs:
+            content = meta_tag["content"]
             # 从content中提取charset
-            charset = content.split('charset=')[-1] if 'charset=' in content else None
+            charset = content.split("charset=")[-1] if "charset=" in content else None
             if charset:
                 response.encoding = charset  # 设置响应编码
-        
+
         # 设置编码后，需要重新解析HTML
-        soup = BeautifulSoup(response.text, 'html.parser')
+        soup = BeautifulSoup(response.text, "html.parser")
         return soup
 
     def extract_and_write_paragraphs(self, doc, p_elements):
@@ -114,7 +122,7 @@ class RenminScraper(BaseScraper):
 
 def browser_func():
     scraper = RenminScraper()
-    return scraper.request_data()
+    return scraper.run()
 
 
 if __name__ == "__main__":

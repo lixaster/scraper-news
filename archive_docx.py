@@ -9,7 +9,7 @@ from move_to_stars_via_api import process_stars_move
 # 配置日志
 logging = setup_logging()
 
-# 调用时传入参数：move、combine或者stars
+# 调用时传入参数: move、combine或者stars
 
 
 def merge_docx_files(
@@ -43,7 +43,7 @@ def merge_docx_files(
                 if by_category:
                     # 获取下一个文件的类别
                     category_next = docx_files[index + 1].split("-")[0]
-                    # 如果当前类别与下一个文件类别相同，则添加分页符
+                    # 如果当前类别与下一个文件类别相同, 则添加分页符
                     if category_current == category_next:
                         document.add_page_break()
                 else:
@@ -52,7 +52,7 @@ def merge_docx_files(
             document.add_paragraph()
 
         if by_category:
-            # 如果该类别还没有Document对象，创建一个新的Document对象
+            # 如果该类别还没有Document对象, 创建一个新的Document对象
             if category_current not in category_documents:
                 category_documents[category_current] = Document()
 
@@ -112,12 +112,12 @@ if __name__ == "__main__":
     args = sys.argv
 
     if len(args) < 2 or len(args) > 3:
-        print("参数错误，请传入参数：move或者combine")
+        print("参数错误, 请传入参数: move或者combine")
         sys.exit(1)
 
     mode = args[1]
     if mode not in ["move", "combine", "stars"]:
-        print("参数错误，请传入参数：move或者combine")
+        print("参数错误, 请传入参数: move或者combine")
         sys.exit(1)
 
     break_flag = True  # 默认情况下设置为 True, 即合并文档时添加分页符
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     root_folder = os.path.join(os.getcwd(), config.get("save_folder"))
     news_sites = config.get("news_sites")
 
-    # 移动加星文件到指定文件夹，防止掉加星
+    # 移动加星文件到指定文件夹, 防止掉加星
     logging.info("开始移动加星文件到指定文件夹")
     process_stars_move()
 
@@ -164,7 +164,7 @@ if __name__ == "__main__":
 
             archive_folder = os.path.join(docx_folder, "合并过的文件", current_date)
             if mode == "stars":
-                # 移动加星文件到指定文件夹，加上日期作为文件夹名
+                # 移动加星文件到指定文件夹, 加上日期作为文件夹名
                 archive_folder = os.path.join(
                     root_folder,
                     item.get("name"),
