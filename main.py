@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
         # 设置每天的执行时间
         scheduletime = config.get("SCHEDULE_TIME", ["08:00"])
-        interval = config.get("INTERVAL", 600)  # 单位：秒
+        interval = int(config.get("INTERVAL", 10)) * 60  # 单位：分钟
 
         # 定义定时任务，如果 schedule_time 为多个时间组成的列表，则分别在每个时间点执行一次
         if not isinstance(scheduletime, list):

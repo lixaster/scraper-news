@@ -12,15 +12,14 @@ class RenminScraper(BaseScraper):
         super().__init__()
         self.base_url = self.get_base_url(self.url)
 
+    def run(self):
+        return self.retrieve_paper()
+
     def get_base_url(self, url):
         if isinstance(url, list):
             url = url[0]
         parsed_url = urlparse(url)
         return f"{parsed_url.scheme}://{parsed_url.netloc}/"
-
-    def run(self):
-        # 必须在子类中实现get_paper_list和get_paper_info方法
-        return self.retrieve_paper()
 
     def get_paper_list(self):
         if type(self.url) == str:
@@ -37,6 +36,26 @@ class RenminScraper(BaseScraper):
         except Exception as e:
             self.logger.error(f"get_paper_list()运行过程出错：{str(e)}")
             return []
+
+    def fetch_page_soup(self, url):
+        response = requests.get(url)
+        # 解析HTML
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        # 查找<meta>标签
+        meta_tag = soup.find("meta", attrs={"http-equiv": "content-type"})
+
+        # 如果找到<meta>标签，提取编码信息
+        if meta_tag and "content" in meta_tag.attrs:
+            content = meta_tag["content"]
+            # 从content中提取charset
+            charset = content.split("charset=")[-1] if "charset=" in content else None
+            if charset:
+                response.encoding = charset  # 设置响应编码
+
+        # 设置编码后，需要重新解析HTML
+        soup = BeautifulSoup(response.text, "html.parser")
+        return soup
 
     def parse_categories(self, soup):
         div_header = soup.find("div", class_="header").find("div", class_="item")
@@ -91,26 +110,6 @@ class RenminScraper(BaseScraper):
         except Exception as e:
             self.logger.error(f"get_paper_info()运行过程出错：{str(e)}")
             return []
-
-    def fetch_page_soup(self, url):
-        response = requests.get(url)
-        # 解析HTML
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        # 查找<meta>标签
-        meta_tag = soup.find("meta", attrs={"http-equiv": "content-type"})
-
-        # 如果找到<meta>标签，提取编码信息
-        if meta_tag and "content" in meta_tag.attrs:
-            content = meta_tag["content"]
-            # 从content中提取charset
-            charset = content.split("charset=")[-1] if "charset=" in content else None
-            if charset:
-                response.encoding = charset  # 设置响应编码
-
-        # 设置编码后，需要重新解析HTML
-        soup = BeautifulSoup(response.text, "html.parser")
-        return soup
 
     def extract_and_write_paragraphs(self, doc, p_elements):
         for p in p_elements:

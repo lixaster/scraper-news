@@ -1,14 +1,21 @@
-HEADLESS: false
-INTERVAL: 600
+# 爬取间隔，单位：分钟
+INTERVAL: 10
+# 爬取时间，格式："时:分"
 SCHEDULE_TIME:
   - "08:00"
   - "12:00"
   - "18:00"
 
-# 调试模式，在容器启动时运行一次爬取
+# 调试模式，为true时在容器启动时运行一次爬取
 debug_mode: true
-# 推送开关
+# 推送开关，为true时推送爬取结果
 notify_switch: false
+
+## playwright的配置
+# 是否无头模式
+HEADLESS: false
+# playwright超时时间，单位：分钟
+playwright_timeout: 2
 
 # NodeRed Webhook
 webhook_url: "http://192.168.1.2:1880/scraper-news?token=scraperxxx"

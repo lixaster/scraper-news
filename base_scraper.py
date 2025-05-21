@@ -33,6 +33,7 @@ class BaseScraper:
             config.get("save_folder", "docx"),
             self.source_name,
         )
+        self.playwright_timeout = int(config.get("playwright_timeout", 2)) * 60000
         os.makedirs(self.save_folder, exist_ok=True)
 
     def retrieve_paper(self, page=None):

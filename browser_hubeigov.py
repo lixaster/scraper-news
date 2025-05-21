@@ -27,7 +27,7 @@ class HubeigovScraper(BaseScraper):
             with playwright.firefox.launch(headless=self.headless_mode) as browser:
                 with browser.new_context() as context:
                     page = context.new_page()
-                    page.set_default_timeout(120000)  # 设置超时时间为2分钟
+                    page.set_default_timeout(self.playwright_timeout)
                     self.retrieve_paper(page)
         except Exception as e:
             self.logger.error(f"request_data()运行过程出错：提前退出playwright。原因：{str(e)}\n{traceback.format_exc()}")
