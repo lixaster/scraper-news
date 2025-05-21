@@ -37,12 +37,11 @@ def mkdirs_with_owner(path, owner_uid=1027, owner_gid=100):
         os.makedirs(path)
         # 更改文件所有者
         try:
-            import platform
-
-            if platform.system() == "Linux":
-                os.chown(path, owner_uid, owner_gid)
+            chown = getattr(os, "chown", None)
+            if chown:
+                chown(path, owner_uid, owner_gid)
             else:
-                logging.warning("非Linux系统，无需设置所有者！")
+                logging.warning("当前系统不支持更改文件所有者！")
         except Exception as e:
             logging.error(f"更改文件所有者失败: {e}")
 

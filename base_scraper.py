@@ -188,8 +188,9 @@ class BaseScraper:
         更改文件所有者, 仅在Linux系统下有效
         """
         try:
-            if os.name == "posix":
-                os.chown(file_path, self.uid, self.gid)
+            chown = getattr(os, "chown", None)
+            if chown:
+                chown(file_path, self.uid, self.gid)
         except Exception as e:
             self.logger.info(f"更改文件所有者失败: {e}")
 
