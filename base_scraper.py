@@ -84,11 +84,11 @@ class BaseScraper:
                 if "政策解读库" in file_name_attachement and not self.is_downloaded(
                     file_name_attachement
                 ):
-                    self.logger.info(
-                        f"【正在处理】[{category}] {datetime} {title} 相关文件 ..."
-                    )
                     href_attachement = paper.get("href_attachement")
                     if href_attachement:
+                        self.logger.info(
+                            f"【正在处理】[{category}] {datetime} {title} 相关文件 ..."
+                        )
                         # 下面的函数在browser子类中定义
                         self.retrieve_attachement(
                             page,

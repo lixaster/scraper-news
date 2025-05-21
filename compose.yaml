@@ -1,11 +1,11 @@
 services:
-  hubei_news:
-    image: lixaster/hb_news:latest
-    container_name: hubei_news
+  scraper-news:
+    image: lixaster/scraper-news:latest
+    container_name: scraper-news
     network_mode: bridge
+    tty: true
     volumes:
       - /path/to/config:/app/config
       - /path/to/docx:/app/docx
-      - /path/to/scripts:/app
     cpu_shares: 10
     restart: unless-stopped

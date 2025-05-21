@@ -2,6 +2,7 @@ from playwright.sync_api import Playwright, sync_playwright
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from base_scraper import BaseScraper
+import traceback
 
 
 class HubeigovScraper(BaseScraper):
@@ -17,26 +18,20 @@ class HubeigovScraper(BaseScraper):
                 self.request_data(playwright)
                 return True
         except Exception as e:
-            self.logger.error(f"request_data()运行过程出错：{str(e)}")
+            self.logger.error(f"run()运行过程出错：{str(e)}")
             return False
 
     def request_data(self, playwright: Playwright):
-        browser = None
-        context = None
+        self.logger.info("开始启动playwright...")
         try:
-            self.logger.info("开始启动playwright...")
-            browser = playwright.firefox.launch(headless=self.headless_mode)
-            context = browser.new_context()
-            page = context.new_page()
-            page.set_default_timeout(120000)  # 设置超时时间为2分钟
-            self.retrieve_paper(page)
+            with playwright.firefox.launch(headless=self.headless_mode) as browser:
+                with browser.new_context() as context:
+                    page = context.new_page()
+                    page.set_default_timeout(120000)  # 设置超时时间为2分钟
+                    self.retrieve_paper(page)
         except Exception as e:
-            self.logger.error(f"run()运行过程出错：提前退出playwright。原因：{str(e)}")
+            self.logger.error(f"request_data()运行过程出错：提前退出playwright。原因：{str(e)}\n{traceback.format_exc()}")
         finally:
-            if context:
-                context.close()
-            if browser:
-                browser.close()
             self.logger.info("playwright已关闭。")
 
     def get_paper_list(self, page):
