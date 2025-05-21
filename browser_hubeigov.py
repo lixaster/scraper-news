@@ -30,7 +30,9 @@ class HubeigovScraper(BaseScraper):
                     page.set_default_timeout(self.playwright_timeout)
                     self.retrieve_paper(page)
         except Exception as e:
-            self.logger.error(f"request_data()运行过程出错：提前退出playwright。原因：{str(e)}\n{traceback.format_exc()}")
+            self.logger.error(
+                f"request_data()运行过程出错：提前退出playwright。原因：{str(e)}\n{traceback.format_exc()}"
+            )
         finally:
             self.logger.info("playwright已关闭。")
 
@@ -101,25 +103,6 @@ class HubeigovScraper(BaseScraper):
             )
         return paper_list
 
-    def extract_and_write_paragraphs(self, doc, p_elements):
-        for p in p_elements:
-            if "text-align: right" in p.get("style", ""):
-                continue
-            paragraph = self.format_paragraph(doc)
-            # 处理标签
-            for content in p.contents:
-                run = self.format_paragraph_font(paragraph)
-
-                text = ""
-                if content.name is None:
-                    text = content
-                else:
-                    text = content.get_text()
-                    if content.name == "strong":
-                        run.bold = True
-
-                run.text = text.strip()
-
     def get_paper_info(self, href, page):
         try:
             soup = self.fetch_page_soup(page, href)
@@ -132,6 +115,25 @@ class HubeigovScraper(BaseScraper):
         except Exception as e:
             self.logger.error(f"get_paper_info()运行过程出错：{str(e)}")
             return []
+
+    def extract_and_write_paragraphs(self, doc, p_elements):
+        for p in p_elements:
+            if "text-align: right" in p.get("style", ""):
+                continue
+            paragraph = self.format_paragraph(doc)
+            # 处理标签
+            for content in p.contents:
+                # 统一提取文本
+                if hasattr(content, "name"):
+                    text = content.get_text(strip=True)
+                else:
+                    text = str(content).strip()
+                if not text:
+                    continue
+                run = self.format_paragraph_font(paragraph)
+                if hasattr(content, "name") and content.name == "strong":
+                    run.bold = True
+                run.text = text
 
     def retrieve_attachement(
         self, page, href_attachement, file_name_attachement, category, datetime
