@@ -1,21 +1,3 @@
-# 使用 synology_drive_api 库，实现在 Synology NAS 上移动加星文件到指定文件夹
-# 依赖库：pip install synology_drive_api
-# 参考文档：https://github.com/zbjdonald/synology-drive-api
-
-# 参考函数：TEST_FOLDER = "/mydrive/新闻文档爬取与合并/hubeigov"
-# 1、上传：
-# with open('record.json', 'rb') as file:
-#    ret_upload = synd.upload_file(file, dest_folder_path=TEST_FOLDER)
-# 2、重命名：
-# 'TEST_FOLDER/record.json' to 'TEST_FOLDER/api_create_folder/record.json'
-# # synd.rename_path(f'record2.json', f'{TEST_FOLDER}/record.json')
-# 3、移动：
-# origin_path = f"{TEST_FOLDER}/record.json"
-# dest_folder = f"{TEST_FOLDER}/api_create_folder"
-# synd.move_path(origin_path, dest_folder)
-# 4、创建文件夹：
-# synd.create_folder('api_create_folder', TEST_FOLDER)
-
 from synology_drive_api.drive import SynologyDrive
 import os
 from utils_func import load_config, path_join, setup_logging
