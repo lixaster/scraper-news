@@ -103,7 +103,7 @@ class HubeigovScraper(BaseScraper):
             )
         return paper_list
 
-    def get_paper_info(self, href, page):
+    def get_paper_info(self, href, page) -> list:
         try:
             soup = self.fetch_page_soup(page, href)
             div = soup.find("div", class_="hbgov-article-content")

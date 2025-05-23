@@ -47,6 +47,7 @@ class BaseScraper:
                 return False
 
             new_paper_list = []
+            tujie_num = 0
             for paper in paper_list:
                 category, title, datetime, href = (
                     paper["category"],
@@ -56,13 +57,18 @@ class BaseScraper:
                 )
 
                 if category == "政策解读库" and title.startswith("图解"):
-                    self.logger.info(f"【跳过图解】[{category}] {datetime} {title} ...")
+                    self.logger.debug(
+                        f"【跳过图解】[{category}] {datetime} {title} ..."
+                    )
+                    tujie_num += 1
                     continue
 
-                name_pure = f"{category}-{self.format_date(datetime)}-{title}"
-                # 处理文件名，去除特殊字符，替换为下划线
-                rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
-                name_pure = re.sub(rstr, "_", name_pure)
+                # 处理文件名，去除特殊字符（'/ \ : * ? " < > |'），替换为下划线
+                name_pure = re.sub(
+                    r"[\/\\\:\*\?\"\<\>\|]",
+                    "_",
+                    f"{category}-{self.format_date(datetime)}-{title}",
+                )
                 # 下载正文
                 file_name = f"{name_pure}.docx"
                 if not self.is_downloaded(file_name):
@@ -98,6 +104,8 @@ class BaseScraper:
                             category,
                             datetime,
                         )
+            if tujie_num > 0:
+                self.logger.info(f"【跳过图解】{tujie_num}篇")
             if self.notify_switch:
                 self.notify(new_paper_list, len(paper_list))
             return True
@@ -200,7 +208,7 @@ class BaseScraper:
         # 必须在子类中实现
         raise NotImplementedError("子类必须实现extract_and_write_paragraphs方法")
 
-    def get_paper_info(href, page=None):
+    def get_paper_info(self, href, page=None):
         # 必须在子类中实现
         raise NotImplementedError("子类必须实现get_paper_info方法")
 

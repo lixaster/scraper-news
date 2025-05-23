@@ -37,7 +37,7 @@ class RenminJpScraper(RenminScraper):
             )
         return paper_list
 
-    def get_paper_info(self, href):
+    def get_paper_info(self, href) -> list:
         try:
             soup = self.fetch_page_soup(href)
             div = soup.find("div", class_="w1000 j-d2txt j-d2txt-fanyi clearfix")
