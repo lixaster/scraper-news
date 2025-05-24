@@ -26,9 +26,9 @@ python archive_docx.py stars
 ```
 
 ## synology drive api
-使用 synology_drive_api 库，实现在 Synology NAS 上移动加星文件到指定文件夹
-依赖库：pip install synology_drive_api
-参考文档：https://github.com/zbjdonald/synology-drive-api
+> 使用 synology_drive_api 库，实现在 Synology NAS 上移动加星文件到指定文件夹  
+> 依赖库：pip install synology_drive_api  
+> 参考文档：https://github.com/zbjdonald/synology-drive-api
 
 ### 参考函数：
 > TEST_FOLDER = "/mydrive/新闻文档爬取与合并/hubeigov"

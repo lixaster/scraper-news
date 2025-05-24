@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from browser_hubeigov import browser_func as browser_func_hubei
 from browser_renmin import browser_func as browser_func_renmin
 from utils_func import load_config, setup_logging
-from move_to_stars_via_api import process_stars_move
+from syno_drive_orgnizer import process_stars_move
 
 # 配置日志
 logger = setup_logging()

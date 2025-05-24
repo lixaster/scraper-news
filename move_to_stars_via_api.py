@@ -8,9 +8,9 @@ logger = setup_logging()
 
 # 读取 yaml 文件，获取配置信息
 config_nas = load_config("config/secret.yaml")
-NAS_USER = config_nas.get("synology_drive_username")
-NAS_PASS = config_nas.get("synology_drive_password")
-NAS_IP = config_nas.get("synology_drive_ip")
+NAS_USER = config_nas.get("nas_username")
+NAS_PASS = config_nas.get("nas_password")
+NAS_IP = config_nas.get("nas_ip")
 
 REMOTE_ROOT_FOLDER = "/mydrive/新闻文档爬取与合并/"
 
