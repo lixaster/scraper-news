@@ -7,15 +7,8 @@ import requests
 class SynoDriveOrgnizer:
     def __init__(self, config_path="config/secret.yaml"):
         self.logger = setup_logging()
-        config_nas = load_config(config_path)
-        self.nas_user = config_nas.get("nas_username")
-        self.nas_pass = config_nas.get("nas_password")
-        self.nas_addr_list = config_nas.get("nas_address", [])
+        self.config_nas = load_config(config_path)
         self.remote_root_folder = "/mydrive/新闻文档爬取与合并/"
-        self.synd = None
-        self.nas_addr = None  # 选中的地址
-        self.nas_port = None
-        self.nas_https = None
 
     @staticmethod
     def try_connect(url):
@@ -26,21 +19,18 @@ class SynoDriveOrgnizer:
             return False
 
     def find_available_nas(self):
-        for addr_info in self.nas_addr_list:
+        for addr_info in self.config_nas.get("nas_address", []):
             addr = addr_info.get("address")
             port = addr_info.get("port", 5000)
-            https = addr_info.get("https", False)
-            url = f"{'https' if https else 'http'}://{addr}:{port}"
-            if self.try_connect(url):
-                self.nas_addr = addr
-                self.nas_port = port
-                self.nas_https = https
-                self.logger.info(f"NAS连接成功: {url})")
-                return True
-        self.logger.info("没有可用的NAS地址")
-        return False
+            is_https = addr_info.get("https", False)
+            url = f"{'https' if is_https else 'http'}://{addr}:{port}"
+            if SynoDriveOrgnizer.try_connect(url):
+                self.logger.debug(f"Synology Drive连接成功: {url}")
+                return addr, port, is_https
+        self.logger.error("没有可用的Synology Drive地址")
+        return None
 
-    def ensure_starred_folder_exists(
+    def gen_starred_folder_path(
         self, remote_folder_path, starred_folder_name, data_items
     ):
         starred_folder_path = path_join(remote_folder_path, starred_folder_name)
@@ -49,9 +39,9 @@ class SynoDriveOrgnizer:
                 self.synd.create_folder(starred_folder_name, remote_folder_path)
                 self.logger.info(f"文件夹创建成功: {starred_folder_path}")
             except Exception as e:
-                self.logger.info(f"创建文件夹失败: {e}")
-                return False
-        return True
+                self.logger.error(f"创建文件夹失败: {e}")
+                return None
+        return starred_folder_path
 
     def move_star_files(self):
         remote_folder_names = ["hubeigov", "renmin"]
@@ -61,11 +51,12 @@ class SynoDriveOrgnizer:
             data = self.synd.list_folder(remote_folder_path)
             data_items = data["data"]["items"]
             # 确保加星文件夹存在
-            if not self.ensure_starred_folder_exists(
+            starred_folder_path = self.gen_starred_folder_path(
                 remote_folder_path, starred_folder_name, data_items
-            ):
+            )
+            if not starred_folder_path:
                 continue
-            starred_folder_path = path_join(remote_folder_path, starred_folder_name)
+
             for item in data_items:
                 if item.get("starred") and item.get("type") == "file":
                     try:
@@ -74,23 +65,39 @@ class SynoDriveOrgnizer:
                             f"移动文件成功: {os.path.basename(item['display_path'])} -> 【{os.path.relpath(starred_folder_path, self.remote_root_folder)}】"
                         )
                     except Exception as e:
-                        self.logger.info(f"移动文件失败: {e}，文件: {item['display_path']}")
+                        self.logger.error(
+                            f"移动文件失败: {e}，文件: {item['display_path']}"
+                        )
 
-    def test(self):
-        self.logger.info(self.synd.list_folder(self.remote_root_folder))
+    def run_test(self):
+        nas_info = self.find_available_nas()
+        if not nas_info:
+            return
+        nas_addr, nas_port, is_https = nas_info
+        with SynologyDrive(
+            self.config_nas.get("nas_username"),
+            self.config_nas.get("nas_password"),
+            nas_addr,
+            https=is_https,
+            dsm_version="7",
+            port=nas_port,
+        ) as self.synd:
+            self.logger.info(self.synd.list_folder(self.remote_root_folder))
 
     def run(self):
-        if not self.find_available_nas():
+        """必须通过run方法, 否则synd对象无法被正确初始化"""
+        nas_info = self.find_available_nas()
+        if not nas_info:
             return
+        nas_addr, nas_port, is_https = nas_info
         with SynologyDrive(
-            self.nas_user,
-            self.nas_pass,
-            self.nas_addr,
-            https=self.nas_https,
+            self.config_nas.get("nas_username"),
+            self.config_nas.get("nas_password"),
+            nas_addr,
+            https=is_https,
             dsm_version="7",
-            port=self.nas_port,
-        ) as synd:
-            self.synd = synd
+            port=nas_port,
+        ) as self.synd:
             self.move_star_files()
 
 
@@ -99,5 +106,10 @@ def process_stars_move():
     orgnizer.run()
 
 
+def test():
+    orgnizer = SynoDriveOrgnizer()
+    orgnizer.run_test()
+
+
 if __name__ == "__main__":
-    process_stars_move()
+    test()
