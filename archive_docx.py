@@ -4,10 +4,10 @@ from docx import Document
 import shutil
 import sys
 from utils_func import load_config, mkdirs_with_owner, change_file_owner, setup_logging
-from move_to_stars_via_api import process_stars_move
+from syno_drive_orgnizer import process_stars_move
 
 # 配置日志
-logging = setup_logging()
+logger = setup_logging()
 
 # 调用时传入参数: move、combine或者stars
 
@@ -23,7 +23,7 @@ def merge_docx_files(
     # 获取文件数量以避免多次计算
     num_files = len(docx_files)
     if num_files == 0:
-        logging.info("没有找到任何docx文件")
+        logger.info("没有找到任何docx文件")
         return
 
     # 创建一个字典用于存储不同类别的文档内容（如果按类别合并）
@@ -73,14 +73,14 @@ def merge_docx_files(
             output_file = os.path.join(output_folder, file_name)
             merged_document.save(output_file)
             change_file_owner(output_file, uid, gid)
-            logging.info(f"合并文件 {file_name} 成功")
+            logger.info(f"合并文件 {file_name} 成功")
     else:
         file_name = f"{file_prefix}-{current_date}"
         file_name = f"{generate_unique_file_name(output_folder, file_name)}.docx"
         output_file = os.path.join(output_folder, file_name)
         merged_document.save(output_file)
         change_file_owner(output_file, uid, gid)
-        logging.info(f"合并文件 {file_name} 成功")
+        logger.info(f"合并文件 {file_name} 成功")
 
 
 def generate_unique_file_name(output_folder, file_name):
@@ -104,7 +104,7 @@ def move_docx_files_to_archive(docx_folder, target_folder, uid, gid):
                 os.path.join(target_folder, file),
             )
     if num > 0:
-        logging.info(f"移动 {num} 个文件到 {target_folder} 成功")
+        logger.info(f"移动 {num} 个文件到 {target_folder} 成功")
 
 
 if __name__ == "__main__":
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     news_sites = config.get("news_sites")
 
     # 移动加星文件到指定文件夹, 防止掉加星
-    logging.info("开始移动加星文件到指定文件夹")
+    logger.info("开始移动加星文件到指定文件夹")
     process_stars_move()
 
     current_date = datetime.now().strftime("%Y-%m-%d")

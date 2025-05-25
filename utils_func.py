@@ -31,25 +31,24 @@ def path_join(*args):
     return os.path.join(*args).replace("\\", "/")
 
 
-def mkdirs_with_owner(path, owner_uid=1027, owner_gid=100):
+def mkdirs_with_owner(folder_path, owner_uid=1027, owner_gid=100):
     # 创建目录，并设置目录的拥有者
-    if not os.path.exists(path):
-        os.makedirs(path)
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
         # 更改文件所有者
-        try:
-            chown = getattr(os, "chown", None)
-            if chown:
-                chown(path, owner_uid, owner_gid)
-            else:
-                logging.warning("当前系统不支持更改文件所有者！")
-        except Exception as e:
-            logging.error(f"更改文件所有者失败: {e}")
+        change_file_owner(folder_path, owner_uid, owner_gid)
 
 
 def change_file_owner(path, owner_uid=1027, owner_gid=100):
     # 更改文件所有者，仅在Linux系统下有效
-    # 由于目前功能一致，可以直接调用mkdirs_with_owner
-    mkdirs_with_owner(path, owner_uid, owner_gid)
+    try:
+        chown = getattr(os, "chown", None)
+        if chown:
+            chown(path, owner_uid, owner_gid)
+        else:
+            logging.warning("当前系统不支持更改文件所有者！")
+    except Exception as e:
+        logging.error(f"更改文件所有者失败: {e}")
 
 
 def load_year_from_args():
