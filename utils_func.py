@@ -2,7 +2,7 @@ import os
 import yaml
 import sys
 import logging
-
+import paho.mqtt.client as mqtt
 
 def setup_logging():
     logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")

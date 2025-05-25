@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - Dockerfile.base
-      - requirements.txt
       - base_version.txt
       # - .github/workflows/build-base.yml
   # 手动触发
