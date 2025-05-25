@@ -13,7 +13,7 @@ notify_switch: false
 
 ## playwright的配置
 # 是否无头模式
-HEADLESS: false
+HEADLESS: true
 # playwright超时时间，单位：分钟
 playwright_timeout: 2
 
