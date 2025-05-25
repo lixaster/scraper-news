@@ -3,8 +3,15 @@ from datetime import datetime
 from docx import Document
 import shutil
 import sys
-from utils_func import load_config, mkdirs_with_owner, change_file_owner, setup_logging
-from syno_drive_orgnizer import process_stars_move
+from utils_func import (
+    load_config,
+    mkdirs_with_owner,
+    change_file_owner,
+    setup_logging,
+    mqtt_publish,
+)
+from syno_drive_orgnizer import process_stars_move_api
+import time
 
 # 调用时传入参数: move、combine或者stars
 
@@ -152,7 +159,7 @@ class DocxArchiver:
 
         # 移动加星文件到指定文件夹, 防止掉加星
         self.logger.info("开始移动加星文件到指定文件夹")
-        process_stars_move()
+        process_stars_move_api()
 
         if mode == "combine":
             self.process_combine_mode(break_flag)
@@ -177,6 +184,8 @@ if __name__ == "__main__":
     try:
         archiver = DocxArchiver()
         archiver.run(mode, break_flag)
+        time.sleep(2)
+        mqtt_publish(payload="update-drive")
     except Exception as e:
         print(f"发生错误: {str(e)}")
         sys.exit(1)

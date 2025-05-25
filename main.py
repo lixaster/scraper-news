@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from browser_hubeigov import browser_func as browser_func_hubei
 from browser_renmin import browser_func as browser_func_renmin
 from utils_func import load_config, setup_logging
-from syno_drive_orgnizer import process_stars_move
+from syno_drive_orgnizer import process_stars_move_api
 
 # 配置日志
 logger = setup_logging()
@@ -16,7 +16,7 @@ config = load_config()
 # 定义并行爬取任务函数
 def job_scraper():
     logger.info("开始执行任务")
-    process_stars_move()
+    process_stars_move_api()
 
     with ThreadPoolExecutor(max_workers=2) as executor:
         future_hubei = executor.submit(browser_func_hubei)

@@ -101,7 +101,7 @@ class SynoDriveOrgnizer:
             self.move_star_files()
 
 
-def process_stars_move():
+def process_stars_move_api():
     orgnizer = SynoDriveOrgnizer()
     orgnizer.run()
 

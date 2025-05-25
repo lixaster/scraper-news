@@ -5,7 +5,7 @@ from docx.shared import Pt, Mm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.ns import qn
 import requests
-from utils_func import setup_logging, load_config
+from utils_func import setup_logging, load_config, mqtt_publish
 
 
 class BaseScraper:
@@ -190,6 +190,9 @@ class BaseScraper:
 
             self.logger.info(f"发送消息到webhook: {self.webhook_url}")
             requests.post(self.webhook_url, json=payload)
+        
+        # mqtt更新drive内容
+        mqtt_publish(payload="update-drive")
 
     def change_file_owner(self, file_path):
         """
