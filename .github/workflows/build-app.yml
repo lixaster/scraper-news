@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      VERSION: v5.8.3 # 在这里设定你的版本号
+      VERSION: v5.8.4 # 在这里设定你的版本号
       APP_NAME: scraper-news  # 定义应用名称变量
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}  # 定义 Docker Hub 用户名变量
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}  # 定义 Docker Hub 令牌变量
