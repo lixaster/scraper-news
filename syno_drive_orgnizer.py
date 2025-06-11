@@ -86,19 +86,22 @@ class SynoDriveOrgnizer:
 
     def run(self):
         """必须通过run方法, 否则synd对象无法被正确初始化"""
-        nas_info = self.find_available_nas()
-        if not nas_info:
-            return
-        nas_addr, nas_port, is_https = nas_info
-        with SynologyDrive(
-            self.config_nas.get("nas_username"),
-            self.config_nas.get("nas_password"),
-            nas_addr,
-            https=is_https,
-            dsm_version="7",
-            port=nas_port,
-        ) as self.synd:
-            self.move_star_files()
+        try:
+            nas_info = self.find_available_nas()
+            if not nas_info:
+                return
+            nas_addr, nas_port, is_https = nas_info
+            with SynologyDrive(
+                self.config_nas.get("nas_username"),
+                self.config_nas.get("nas_password"),
+                nas_addr,
+                https=is_https,
+                dsm_version="7",
+                port=nas_port,
+            ) as self.synd:
+                self.move_star_files()
+        except Exception as e:
+            self.logger.error(f"处理加星文件夹失败: {e}")
 
 
 def process_stars_move_api():
