@@ -7,5 +7,6 @@ services:
     volumes:
       - /path/to/config:/app/config
       - /path/to/docx:/app/docx
+      - /path/to/docx_temp:/app/docx_temp
     cpu_shares: 10
     restart: unless-stopped
