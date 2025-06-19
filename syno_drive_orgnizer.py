@@ -82,7 +82,13 @@ class SynoDriveOrgnizer:
             dsm_version="7",
             port=nas_port,
         ) as self.synd:
-            self.logger.info(self.synd.list_folder(self.remote_root_folder))
+            obj = self.synd.list_folder(self.remote_root_folder)
+            self.synd.create_folder("456", f"{self.remote_root_folder}")
+            # 保存到json文件
+            import json
+
+            with open("debug/files.json", "w", encoding="utf-8") as f:
+                json.dump(obj, f, ensure_ascii=False, indent=4)
 
     def run(self):
         """必须通过run方法, 否则synd对象无法被正确初始化"""

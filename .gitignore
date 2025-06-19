@@ -4,3 +4,5 @@
 /config/secret.yaml
 /.vscode
 /config/config.yaml
+/debug
+/docx_temp
