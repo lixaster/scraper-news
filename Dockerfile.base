@@ -4,9 +4,10 @@ ENV TZ=Asia/Shanghai
 WORKDIR /app
 
 COPY pyproject.toml ./
-RUN pip install -r pyproject.toml && \
-    playwright install firefox && \
-    playwright install-deps firefox && \
+RUN pip install --no-cache-dir uv && \
+    # uv sync --system && \
+    # playwright install firefox && \
+    # playwright install-deps firefox && \
     apt-get update && \
     apt-get install -y --no-install-recommends vim && \
     apt-get clean
