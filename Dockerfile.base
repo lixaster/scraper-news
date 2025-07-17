@@ -1,12 +1,22 @@
 FROM python:3.12-slim-bookworm
+
+# 设置时区
 ENV TZ=Asia/Shanghai
 
+# 创建工作目录
 WORKDIR /app
 
-COPY pyproject.toml ./
-RUN pip install . && \
-    playwright install firefox && \
-    playwright install-deps firefox && \
-    apt-get update && \
+# 首先安装系统工具
+RUN apt-get update && \
     apt-get install -y --no-install-recommends vim && \
     apt-get clean
+
+# 复制并安装Python依赖
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir .  # 清理缓存
+
+# 安装浏览器依赖
+RUN playwright install-deps firefox
+
+# 安装浏览器
+RUN playwright install firefox
