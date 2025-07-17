@@ -4,7 +4,7 @@ ENV TZ=Asia/Shanghai
 WORKDIR /app
 
 COPY pyproject.toml ./
-RUN pip install -e . && \
+RUN pip install . && \
     playwright install firefox && \
     playwright install-deps firefox && \
     apt-get update && \
