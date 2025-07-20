@@ -15,8 +15,5 @@ RUN apt-get update && \
 COPY pyproject.toml ./
 RUN pip install --no-cache-dir .  # 清理缓存
 
-# 安装浏览器依赖
-RUN playwright install-deps firefox
-
-# 安装浏览器
-RUN playwright install firefox
+# 安装浏览器及其依赖
+RUN playwright install --with-deps firefox
